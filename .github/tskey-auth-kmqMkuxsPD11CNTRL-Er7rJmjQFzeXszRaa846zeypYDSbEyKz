@@ -1,0 +1,22 @@
+name: RDP Server
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 360
+
+    steps:
+    - name: Enable Windows RDP & Set Password
+      run: |
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
+        Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+        net user runneradmin MyPassword123!
+        Write-Host "RDP is ready!"
+
+    - name: Keep Server Running
+      run: |
+        Start-Sleep -Seconds 21600
